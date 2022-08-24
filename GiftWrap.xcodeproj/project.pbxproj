@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		E9FBC7DB28B6678C00D0A3F4 /* GiftWrapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7DA28B6678C00D0A3F4 /* GiftWrapApp.swift */; };
-		E9FBC7DD28B6678C00D0A3F4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7DC28B6678C00D0A3F4 /* ContentView.swift */; };
+		E9FBC7DD28B6678C00D0A3F4 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7DC28B6678C00D0A3F4 /* HomeView.swift */; };
 		E9FBC7DF28B6678C00D0A3F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9FBC7DE28B6678C00D0A3F4 /* Assets.xcassets */; };
 		E9FBC7E228B6678C00D0A3F4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9FBC7E128B6678C00D0A3F4 /* Preview Assets.xcassets */; };
 		E9FBC7EC28B6678D00D0A3F4 /* GiftWrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7EB28B6678D00D0A3F4 /* GiftWrapTests.swift */; };
 		E9FBC7F628B6678D00D0A3F4 /* GiftWrapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7F528B6678D00D0A3F4 /* GiftWrapUITests.swift */; };
 		E9FBC7F828B6678D00D0A3F4 /* GiftWrapUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7F728B6678D00D0A3F4 /* GiftWrapUITestsLaunchTests.swift */; };
+		E9FBC80528B69A3300D0A3F4 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC80428B69A3300D0A3F4 /* HomeViewModel.swift */; };
+		E9FBC80728B69CF500D0A3F4 /* PrimaryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC80628B69CF500D0A3F4 /* PrimaryButtonStyle.swift */; };
+		E9FBC80928B69FC100D0A3F4 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC80828B69FC100D0A3F4 /* ScannerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +39,7 @@
 /* Begin PBXFileReference section */
 		E9FBC7D728B6678C00D0A3F4 /* GiftWrap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiftWrap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9FBC7DA28B6678C00D0A3F4 /* GiftWrapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWrapApp.swift; sourceTree = "<group>"; };
-		E9FBC7DC28B6678C00D0A3F4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E9FBC7DC28B6678C00D0A3F4 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		E9FBC7DE28B6678C00D0A3F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E9FBC7E128B6678C00D0A3F4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E9FBC7E728B6678D00D0A3F4 /* GiftWrapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GiftWrapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +47,9 @@
 		E9FBC7F128B6678D00D0A3F4 /* GiftWrapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GiftWrapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9FBC7F528B6678D00D0A3F4 /* GiftWrapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWrapUITests.swift; sourceTree = "<group>"; };
 		E9FBC7F728B6678D00D0A3F4 /* GiftWrapUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWrapUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		E9FBC80428B69A3300D0A3F4 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		E9FBC80628B69CF500D0A3F4 /* PrimaryButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButtonStyle.swift; sourceTree = "<group>"; };
+		E9FBC80828B69FC100D0A3F4 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,9 +101,12 @@
 			isa = PBXGroup;
 			children = (
 				E9FBC7DA28B6678C00D0A3F4 /* GiftWrapApp.swift */,
-				E9FBC7DC28B6678C00D0A3F4 /* ContentView.swift */,
+				E9FBC7DC28B6678C00D0A3F4 /* HomeView.swift */,
+				E9FBC80828B69FC100D0A3F4 /* ScannerView.swift */,
+				E9FBC80428B69A3300D0A3F4 /* HomeViewModel.swift */,
 				E9FBC7DE28B6678C00D0A3F4 /* Assets.xcassets */,
 				E9FBC7E028B6678C00D0A3F4 /* Preview Content */,
+				E9FBC80628B69CF500D0A3F4 /* PrimaryButtonStyle.swift */,
 			);
 			path = GiftWrap;
 			sourceTree = "<group>";
@@ -257,7 +266,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9FBC7DD28B6678C00D0A3F4 /* ContentView.swift in Sources */,
+				E9FBC80728B69CF500D0A3F4 /* PrimaryButtonStyle.swift in Sources */,
+				E9FBC80928B69FC100D0A3F4 /* ScannerView.swift in Sources */,
+				E9FBC7DD28B6678C00D0A3F4 /* HomeView.swift in Sources */,
+				E9FBC80528B69A3300D0A3F4 /* HomeViewModel.swift in Sources */,
 				E9FBC7DB28B6678C00D0A3F4 /* GiftWrapApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,6 +432,7 @@
 				DEVELOPMENT_TEAM = 7R8U9B2AP5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Gift Wrap requires camera access to scan your space.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,6 +462,7 @@
 				DEVELOPMENT_TEAM = 7R8U9B2AP5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Gift Wrap requires camera access to scan your space.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
