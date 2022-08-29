@@ -5,6 +5,7 @@
 //  Created by Niranjan Ravichandran on 8/24/22.
 //
 
+import ARKit
 import SwiftUI
 
 struct HomeView: View {
@@ -12,6 +13,16 @@ struct HomeView: View {
     @State var showRoomCaptureView = false
     @State var showPreview = false
     @State var isImageAnimating = false
+
+    var isRoomCaptureSupported: Bool {
+        ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh)
+    }
+
+    var infoText: String {
+        isRoomCaptureSupported
+        ? "Get started with scanning your space."
+        : "Device not supported. Space scanning requires a LiDAR enabled device."
+    }
 
     var body: some View {
         NavigationStack {
@@ -27,14 +38,17 @@ struct HomeView: View {
                             isImageAnimating = true
                         }
                     }
-                Text("Get started with scanning your space.")
+                Text(infoText)
                     .padding()
+                    .multilineTextAlignment(.center)
                 Button {
                     withAnimation { showRoomCaptureView.toggle() }
                 } label: {
                     Text("Begin Scan")
                 }
                 .buttonStyle(PrimaryButtonStyle())
+                .disabled(!isRoomCaptureSupported)
+                .opacity(isRoomCaptureSupported ? 1 : 0.5)
 
                 Spacer()
                 

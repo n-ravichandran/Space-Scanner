@@ -12,6 +12,8 @@
 		E90A91D128BA56AD002DEA7A /* ModalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90A91D028BA56AD002DEA7A /* ModalManager.swift */; };
 		E90A91D828BB8D8E002DEA7A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E90A91D728BB8D8E002DEA7A /* Lottie */; };
 		E90A91DC28BB92B0002DEA7A /* home_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = E90A91DB28BB92B0002DEA7A /* home_animation.json */; };
+		E986875F28BCD161007DAD04 /* CaptureRoomExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E986875E28BCD161007DAD04 /* CaptureRoomExtensions.swift */; };
+		E986876228BCD18D007DAD04 /* SCNNodeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E986876128BCD18D007DAD04 /* SCNNodeExtensions.swift */; };
 		E9FBC7DB28B6678C00D0A3F4 /* GiftWrapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7DA28B6678C00D0A3F4 /* GiftWrapApp.swift */; };
 		E9FBC7DD28B6678C00D0A3F4 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FBC7DC28B6678C00D0A3F4 /* HomeView.swift */; };
 		E9FBC7DF28B6678C00D0A3F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9FBC7DE28B6678C00D0A3F4 /* Assets.xcassets */; };
@@ -45,6 +47,8 @@
 		E90A91CE28B8EC90002DEA7A /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		E90A91D028BA56AD002DEA7A /* ModalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalManager.swift; sourceTree = "<group>"; };
 		E90A91DB28BB92B0002DEA7A /* home_animation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = home_animation.json; sourceTree = "<group>"; };
+		E986875E28BCD161007DAD04 /* CaptureRoomExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureRoomExtensions.swift; sourceTree = "<group>"; };
+		E986876128BCD18D007DAD04 /* SCNNodeExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNNodeExtensions.swift; sourceTree = "<group>"; };
 		E9FBC7D728B6678C00D0A3F4 /* GiftWrap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiftWrap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9FBC7DA28B6678C00D0A3F4 /* GiftWrapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftWrapApp.swift; sourceTree = "<group>"; };
 		E9FBC7DC28B6678C00D0A3F4 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -128,6 +132,15 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		E986876028BCD167007DAD04 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				E986875E28BCD161007DAD04 /* CaptureRoomExtensions.swift */,
+				E986876128BCD18D007DAD04 /* SCNNodeExtensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		E9FBC7CE28B6678C00D0A3F4 = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +168,7 @@
 				E90A91D328BA56D1002DEA7A /* ButtonStyles */,
 				E90A91D528BA5717002DEA7A /* Managers */,
 				E90A91D228BA56CB002DEA7A /* Views */,
+				E986876028BCD167007DAD04 /* Extensions */,
 				E90A91CD28B8EC07002DEA7A /* ViewControllers */,
 				E9FBC7E028B6678C00D0A3F4 /* Preview Content */,
 				E90A91D428BA56EE002DEA7A /* Resources */,
@@ -326,11 +340,13 @@
 			files = (
 				E9FBC80728B69CF500D0A3F4 /* PrimaryButtonStyle.swift in Sources */,
 				E90A91D128BA56AD002DEA7A /* ModalManager.swift in Sources */,
+				E986876228BCD18D007DAD04 /* SCNNodeExtensions.swift in Sources */,
 				E9FBC80928B69FC100D0A3F4 /* ScannerView.swift in Sources */,
 				E9FBC7DD28B6678C00D0A3F4 /* HomeView.swift in Sources */,
 				E90A91CF28B8EC90002DEA7A /* PreviewViewController.swift in Sources */,
 				E9FBC7DB28B6678C00D0A3F4 /* GiftWrapApp.swift in Sources */,
 				E90A91CC28B7E525002DEA7A /* RoomCaptureViewController.swift in Sources */,
+				E986875F28BCD161007DAD04 /* CaptureRoomExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

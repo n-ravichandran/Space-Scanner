@@ -71,7 +71,7 @@ class RoomCaptureViewController: UIViewController {
         let scanButton = UIBarButtonItem(title: "Scan", style: .plain, target: self, action: #selector(startScan))
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(stopScan))
         let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(attemptExport))
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(cancelTapped))
+        let cancelButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(cancelTapped))
 
         switch scanState {
             case .ready:
@@ -183,14 +183,6 @@ extension RoomCaptureViewController: RoomCaptureViewDelegate {
     func captureView(didPresent processedResult: CapturedRoom, error: Error?) {
         scanState = .done(processedResult)
         didFinishScanning(capturedRoom: processedResult)
-    }
-
-}
-
-private extension CapturedRoom {
-
-    var isValidScan: Bool {
-        !walls.isEmpty && !doors.isEmpty && !objects.isEmpty && !windows.isEmpty && !openings.isEmpty
     }
 
 }
