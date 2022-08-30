@@ -43,6 +43,7 @@ extension SCNNode {
             let furnitureTypes = CapturedRoom.Object.Category.allCases.map(\.detail)
             if furnitureTypes.contains(where: { name.starts(with: $0) }) {
                 self = .furniture
+                return
             }
             return nil
         }

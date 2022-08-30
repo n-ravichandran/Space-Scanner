@@ -67,15 +67,16 @@ class PreviewViewController: UIViewController {
                 guard let self = self else { return }
 
                 scene.rootNode.markAsSpaceNode()
+                self.decorateScene(scene)
 
                 switch self.sceneView.scene {
-                case let .some(existingScene):
-                    existingScene.rootNode.addChildNode(scene.rootNode)
-                case .none:
-                    // Create an empty scene and append our model to it as a child node.
+                    case let .some(existingScene):
+                        existingScene.rootNode.addChildNode(scene.rootNode)
+                    case .none:
+                        // Create an empty scene and append our model to it as a child node.
 
-                    // Also prepare a camera node (which will be controlled by SCNCameraController / SCNView's defaultCameraController),
-                    // if we do not set this up and let SceneKit add a default camera node, we can't move the camera via defaultCameraController
+                        // Also prepare a camera node (which will be controlled by SCNCameraController / SCNView's defaultCameraController),
+                        // if we do not set this up and let SceneKit add a default camera node, we can't move the camera via defaultCameraController
 
                         let rootScene = SCNScene()
                         let cameraNode = SCNNode()
@@ -92,7 +93,24 @@ class PreviewViewController: UIViewController {
     }
 
     func decorateScene(_ scene: SCNScene) {
-
+        let rootNode = scene.rootNode
+        rootNode.enumerateHierarchy { node, _ in
+            guard let geometry = node.geometry else { return }
+            switch node.type {
+                case .door:
+                    geometry.firstMaterial?.diffuse.contents = UIColor.green.withAlphaComponent(0.75)
+                case .floor:
+                    geometry.firstMaterial?.diffuse.contents = UIImage(named: "wooden_texture")
+                case .furniture:
+                    geometry.firstMaterial?.diffuse.contents = UIColor(red: 135/255, green: 165/255, blue: 250/255, alpha: 0.9)
+                case .wall:
+                    geometry.firstMaterial?.diffuse.contents = UIImage(named: "wall_texture.jpg")
+                case .opening, .window:
+                    break
+                case .none:
+                    break
+            }
+        }
     }
 
 }
@@ -225,7 +243,7 @@ private extension PreviewViewController {
         let roomNode = sceneView.scene!.rootNode.childNodes[1].childNodes[0] // Fix this later
         let boundingBox = roomNode.boundingBox
         let floorHeight: CGFloat = 0.11
-        let boxOffset = Float(0.005) // 0.05m per side hangs off the wall
+        let boxOffset = Float(0.001) // make sides hangs off the wall
         let boxWidth = (boundingBox.max.x - boundingBox.min.x) + (boxOffset * 2)
         let boxLenght = (boundingBox.max.z - boundingBox.min.z) + (boxOffset * 2)
         let box = SCNBox(
@@ -235,9 +253,9 @@ private extension PreviewViewController {
             chamferRadius: 0
         )
 
-        print("Bounding box: \(boundingBox)")
         let boxNode = SCNNode(geometry: box)
         boxNode.name = "Floor"
+        box.firstMaterial?.diffuse.contents = UIImage(named: "wooden_texture")
         let x = boundingBox.min.x + (boxWidth / 2.0) - boxOffset
         let z = boundingBox.min.z + (boxLenght / 2.0) - boxOffset
         boxNode.localTranslate(by: .init(x: x, y: boundingBox.min.y - Float(box.height), z: z))
@@ -284,15 +302,18 @@ private extension PreviewViewController {
         }
 
         let previousSelectionState = selectionState
+        let isFloorSelected = selectedNode.type == .floor
         switch previousSelectionState {
             case .none:
-                selectedNode.geometry?.firstMaterial?.diffuse.contents = UIColor.systemGreen.withAlphaComponent(0.6)
                 selectionState = .surface(selectedNode)
-                slidingGesture.isEnabled = selectedNode.type == .floor
-                sceneView.allowsCameraControl = false
+                slidingGesture.isEnabled = isFloorSelected
+                sceneView.allowsCameraControl = !isFloorSelected
+                selectedNode.geometry?.firstMaterial?.diffuse.contents = UIColor.systemGreen.withAlphaComponent(0.6)
             case .surface(let node):
                 selectionState = .none
-                node.geometry?.firstMaterial?.diffuse.contents = UIColor.white
+                node.geometry?.firstMaterial?.diffuse.contents = isFloorSelected
+                ? UIImage(named: "wooden_texture")
+                : UIColor.white
                 slidingGesture.isEnabled = false
                 sceneView.allowsCameraControl = true
         }
