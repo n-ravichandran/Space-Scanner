@@ -7,9 +7,23 @@
 
 import UIKit
 
+enum LoaderError: LocalizedError {
+    case noURL
+    case exportError(Error)
+    case cancelled
+
+    var errorDescription: String? {
+        switch self {
+            case .noURL: return "No URL found"
+            case .exportError(let underlyingError): return underlyingError.localizedDescription
+            case .cancelled: return "No file selected. Please select a file to view a previous scan."
+        }
+    }
+}
+
 class ModelLoader: NSObject {
 
-    var pickerCompletion: ((Result<URL, Error>) -> Void)?
+    var pickerCompletion: ((Result<URL, LoaderError>) -> Void)?
 
     func showPicker(from viewController: UIViewController) async throws -> URL {
         return try await withCheckedThrowingContinuation { checkedContinuation in
@@ -33,6 +47,7 @@ extension ModelLoader: UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else {
+            pickerCompletion?(.failure(.noURL))
             return
         }
 
@@ -46,9 +61,13 @@ extension ModelLoader: UIDocumentPickerDelegate {
                 try FileManager.default.copyItem(at: url, to: exportPath)
                 self.pickerCompletion?(.success(exportPath))
             } catch {
-                self.pickerCompletion?(.failure(error))
+                self.pickerCompletion?(.failure(.exportError(error)))
             }
         }
+    }
+
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        pickerCompletion?(.failure(.cancelled))
     }
 
 }

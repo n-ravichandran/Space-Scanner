@@ -23,6 +23,11 @@ class PreviewViewController: UIViewController {
 
     private let modelLoader = ModelLoader()
     private var selectionState: SelectionState = .none
+    private var isAnyModelLoaded = false {
+        didSet {
+            updateRightNavigationItems()
+        }
+    }
 
     private var isSceneSetup: Bool {
         view.subviews.contains(sceneView)
@@ -43,15 +48,12 @@ class PreviewViewController: UIViewController {
                 setupSceneIfNeeded()
                 addModel(path: url)
                 stopActivity()
+                isAnyModelLoaded = true
             } catch {
                 stopActivity()
-                let alert = UIAlertController(
-                    title: "Error loading model",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(.init(title: "OK", style: .cancel, handler: nil))
-                present(alert, animated: true)
+                showAlert(title: "Error loading model", message: error.localizedDescription)
+                updateRightNavigationItems()
+                isAnyModelLoaded = false
             }
         }
     }
@@ -70,34 +72,27 @@ class PreviewViewController: UIViewController {
                 case let .some(existingScene):
                     existingScene.rootNode.addChildNode(scene.rootNode)
                 case .none:
-                    // We'll create an empty scene and append our model to it as a child node.
-                    // This way we append each model as a separate child node, instead of adding new models as child nodes
-                    // to the initial model.
-                    // This way selection opacity / transforms are limited to each model separately, so it just makes
-                    // operations much easier.
-                    //
-                    // We also prepare a camera node (which will be controlled by SCNCameraController / SCNView's defaultCameraController),
+                    // Create an empty scene and append our model to it as a child node.
+
+                    // Also prepare a camera node (which will be controlled by SCNCameraController / SCNView's defaultCameraController),
                     // if we do not set this up and let SceneKit add a default camera node, we can't move the camera via defaultCameraController
 
-                    let rootScene = SCNScene()
-
-                    let cameraNode = SCNNode()
-                    cameraNode.camera = SCNCamera()
-                    cameraNode.position = SCNVector3(x: 0, y: 0, z: 10)
-                    rootScene.rootNode.addChildNode(cameraNode)
-                    rootScene.rootNode.addChildNode(scene.rootNode)
-                    self.sceneView.scene = rootScene
-
-                    SCNTransaction.begin()
-                    SCNTransaction.animationDuration = 1
-                    let cameraController = self.sceneView.defaultCameraController
-                    let rotation = (Float.pi / 4) * 50
-                    cameraController.rotateBy(x: rotation, y: -rotation)
-                    SCNTransaction.commit()
+                        let rootScene = SCNScene()
+                        let cameraNode = SCNNode()
+                        cameraNode.camera = SCNCamera()
+                        cameraNode.position = SCNVector3(x: 0, y: 0, z: 10)
+                        rootScene.rootNode.addChildNode(cameraNode)
+                        rootScene.rootNode.addChildNode(scene.rootNode)
+                        self.sceneView.scene = rootScene
+                        self.animateSceneLoad()
                 }
                 self.stopActivity()
             }
         }
+    }
+
+    func decorateScene(_ scene: SCNScene) {
+
     }
 
 }
@@ -112,10 +107,14 @@ private extension PreviewViewController {
         gradient.colors = [UIColor.black.cgColor, UIColor.darkGray.cgColor]
         view.layer.insertSublayer(gradient, at: 0)
 
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeTapped))
+    }
+
+    func updateRightNavigationItems() {
         let toggleFloor = UIBarButtonItem(title: "Add Floor", style: .plain, target: self, action: #selector(addFloor))
         let exportScene = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(exportScene))
-        navigationItem.rightBarButtonItems = [toggleFloor, exportScene]
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeTapped))
+        let addButton = UIBarButtonItem(image: UIImage(systemName: "rectangle.stack.fill.badge.plus"), style: .plain, target: self, action: #selector(showModelPicker))
+        navigationItem.rightBarButtonItems = isAnyModelLoaded ? [toggleFloor, exportScene] : [addButton]
     }
 
     func startActivity() {
@@ -153,8 +152,8 @@ private extension PreviewViewController {
     }
 
     func setupSlidingGesture() -> UIPanGestureRecognizer {
-        let slidingGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSlideInScene(sender:)))
-        slidingGesture.minimumNumberOfTouches = 2
+        let slidingGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(sender:)))
+        slidingGesture.minimumNumberOfTouches = 1
         slidingGesture.maximumNumberOfTouches = 2
         slidingGesture.isEnabled = false
         return slidingGesture
@@ -167,6 +166,15 @@ private extension PreviewViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapInScene(sender:)))
         sceneView.addGestureRecognizer(tapGesture)
         sceneView.addGestureRecognizer(slidingGesture)
+    }
+
+    func animateSceneLoad() {
+        SCNTransaction.begin()
+        SCNTransaction.animationDuration = 1
+        let cameraController = sceneView.defaultCameraController
+        let rotation = (Float.pi / 4) * 50
+        cameraController.rotateBy(x: rotation, y: -rotation)
+        SCNTransaction.commit()
     }
 
     func setupLayouts() {
@@ -186,6 +194,10 @@ private extension PreviewViewController {
 
 private extension PreviewViewController {
 
+    @objc func showModelPicker() {
+        loadModel()
+    }
+
     @objc func closeTapped() {
         dismiss(animated: true)
     }
@@ -199,23 +211,14 @@ private extension PreviewViewController {
             delegate: nil,
             progressHandler: { progress, error, _ in
                 debugPrint("[] Progress exporting: \(progress), error: \(String(describing: error))")
-            })
+            }
+        )
 
         guard exportSuccess else {
-            let alert = UIAlertController(
-                title: nil,
-                message: "Could not export model",
-                preferredStyle: .alert
-            )
-            alert.addAction(.init(title: "OK", style: .default))
-            present(alert, animated: true)
+            showAlert(title: nil, message: "Could not export model")
             return
         }
-        let activity = UIActivityViewController(activityItems: [exportPath], applicationActivities: nil)
-        activity.completionWithItemsHandler = { [weak self] _, _, _, _ in
-            self?.dismiss(animated: true)
-        }
-        present(activity, animated: true)
+        showActivitySheet(activityItems: [exportPath])
     }
 
     @objc func addFloor() {
@@ -241,7 +244,7 @@ private extension PreviewViewController {
         roomNode.addChildNode(boxNode)
     }
 
-    @objc func handleSlideInScene(sender: UIPanGestureRecognizer) {
+    @objc func handlePanGesture(sender: UIPanGestureRecognizer) {
         guard case let SelectionState.surface(selectedNode) = selectionState else { return }
 
         let translation = sender.translation(in: sender.view)

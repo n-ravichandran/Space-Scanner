@@ -107,6 +107,35 @@ class RoomCaptureViewController: UIViewController {
 
 private extension RoomCaptureViewController {
 
+    func export(_ room: CapturedRoom) {
+        view.isUserInteractionEnabled = false
+        let exportPath = FileManager.default.temporaryDirectory.appending(path: "Captured_Space_\(UUID().uuidString).usdz")
+        do {
+            try room.export(to: exportPath)
+            showActivitySheet(activityItems: [exportPath])
+        } catch {
+            debugPrint("Error: \(error.localizedDescription)")
+            showAlert(title: "Export failed", message: error.localizedDescription)
+        }
+    }
+
+    func didFinishScanning(capturedRoom: CapturedRoom) {
+        if capturedRoom.isValidScan { return }
+
+        scanState = .ready
+        showIncompleteScanAlert()
+    }
+
+    func showIncompleteScanAlert() {
+        showAlert(title: "Incomplete Scan", message: "No objects found in the scan. Please try scanning again.")
+    }
+
+}
+
+// MARK: - Event Handlers
+
+private extension RoomCaptureViewController {
+
     @objc func startScan() {
         roomCaptureView.captureSession.run(configuration: roomCaptureSessionConfig)
         roomCaptureView.delegate = self
@@ -124,45 +153,6 @@ private extension RoomCaptureViewController {
         }
 
         export(capturedRoom)
-    }
-
-    func export(_ room: CapturedRoom) {
-        view.isUserInteractionEnabled = false
-        let exportPath = FileManager.default.temporaryDirectory.appending(path: "Captured_Space_\(UUID().uuidString).usdz")
-        do {
-            try room.export(to: exportPath)
-            let activity = UIActivityViewController(activityItems: [exportPath], applicationActivities: nil)
-            activity.completionWithItemsHandler = { [weak self] _, _, _, _ in
-                self?.dismiss(animated: true)
-            }
-            present(activity, animated: true)
-        } catch {
-            debugPrint("Error: \(error.localizedDescription)")
-            let alert = UIAlertController(
-                title: "Could not export model",
-                message: error.localizedDescription,
-                preferredStyle: .alert
-            )
-            alert.addAction(.init(title: "OK", style: .default))
-            present(alert, animated: true)
-        }
-    }
-
-    func didFinishScanning(capturedRoom: CapturedRoom) {
-        if capturedRoom.isValidScan { return }
-
-        scanState = .ready
-        showIncompleteScanAlert()
-    }
-
-    func showIncompleteScanAlert() {
-        let alert = UIAlertController(
-            title: "Incomplete Scan",
-            message: "No objects found in the scan. Please try scanning again.",
-            preferredStyle: .alert
-        )
-        alert.addAction(.init(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 
 }
