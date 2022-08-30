@@ -1,6 +1,6 @@
 //
 //  ScannerView.swift
-//  GiftWrap
+//  SpaceScanner
 //
 //  Created by Niranjan Ravichandran on 8/24/22.
 //

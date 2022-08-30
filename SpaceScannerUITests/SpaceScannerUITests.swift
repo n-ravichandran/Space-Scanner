@@ -1,6 +1,6 @@
 //
-//  GiftWrapUITests.swift
-//  GiftWrapUITests
+//  SpaceScannerUITests.swift
+//  SpaceScannerUITests
 //
 //  Created by Niranjan Ravichandran on 8/24/22.
 //

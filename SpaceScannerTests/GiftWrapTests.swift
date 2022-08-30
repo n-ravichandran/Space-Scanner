@@ -1,14 +1,14 @@
 //
-//  GiftWrapTests.swift
-//  GiftWrapTests
+//  SpaceScannerTests.swift
+//  SpaceScannerTests
 //
 //  Created by Niranjan Ravichandran on 8/24/22.
 //
 
 import XCTest
-@testable import GiftWrap
+@testable import SpaceScanner
 
-final class GiftWrapTests: XCTestCase {
+final class SpaceScannerTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

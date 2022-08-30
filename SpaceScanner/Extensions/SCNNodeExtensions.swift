@@ -1,6 +1,6 @@
 //
 //  SCNNodeExtensions.swift
-//  GiftWrap
+//  SpaceScanner
 //
 //  Created by Niranjan Ravichandran on 8/29/22.
 //

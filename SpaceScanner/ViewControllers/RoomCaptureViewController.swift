@@ -1,6 +1,6 @@
 //
 //  RoomCaptureViewController.swift
-//  GiftWrap
+//  SpaceScanner
 //
 //  Created by Niranjan Ravichandran on 8/25/22.
 //

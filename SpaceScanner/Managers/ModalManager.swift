@@ -1,6 +1,6 @@
 //
 //  ModalManager.swift
-//  GiftWrap
+//  SpaceScanner
 //
 //  Created by Niranjan Ravichandran on 8/27/22.
 //

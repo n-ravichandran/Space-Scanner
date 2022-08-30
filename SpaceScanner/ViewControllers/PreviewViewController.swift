@@ -1,6 +1,6 @@
 //
 //  PreviewViewController.swift
-//  GiftWrap
+//  SpaceScanner
 //
 //  Created by Niranjan Ravichandran on 8/26/22.
 //
