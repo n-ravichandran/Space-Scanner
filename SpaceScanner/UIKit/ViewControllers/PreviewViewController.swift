@@ -29,6 +29,16 @@ class PreviewViewController: UIViewController {
         }
     }
 
+    private var shouldDrawFurnitures = true {
+        didSet {
+            toggleFurnitures()
+        }
+    }
+
+    private var spaceNode: SCNNode? {
+        sceneView.scene?.rootNode.childNodes.first(where: \.isSpaceNode)
+    }
+
     private var isSceneSetup: Bool {
         view.subviews.contains(sceneView)
     }
@@ -102,7 +112,7 @@ class PreviewViewController: UIViewController {
                 case .floor:
                     geometry.firstMaterial?.diffuse.contents = UIImage(named: "wooden_texture")
                 case .furniture:
-                    geometry.firstMaterial?.diffuse.contents = UIColor(red: 135/255, green: 165/255, blue: 250/255, alpha: 0.9)
+                    geometry.firstMaterial?.diffuse.contents = UIColor(red: 75/255, green: 145/255, blue: 250/255, alpha: 0.9)
                 case .wall:
                     geometry.firstMaterial?.diffuse.contents = UIImage(named: "wall_texture.jpg")
                 case .opening, .window:
@@ -129,10 +139,19 @@ private extension PreviewViewController {
     }
 
     func updateRightNavigationItems() {
-        let toggleFloor = UIBarButtonItem(title: "Add Floor", style: .plain, target: self, action: #selector(addFloor))
-        let exportScene = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(exportScene))
-        let addButton = UIBarButtonItem(image: UIImage(systemName: "rectangle.stack.fill.badge.plus"), style: .plain, target: self, action: #selector(showModelPicker))
-        navigationItem.rightBarButtonItems = isAnyModelLoaded ? [toggleFloor, exportScene] : [addButton]
+        let addButton = UIBarButtonItem(
+            image: UIImage(systemName: "rectangle.stack.fill.badge.plus"),
+            style: .plain,
+            target: self,
+            action: #selector(showModelPicker)
+        )
+        let optionsButton = UIBarButtonItem(
+            image: UIImage(systemName: "ellipsis.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(showOptions)
+        )
+        navigationItem.rightBarButtonItem = isAnyModelLoaded ? optionsButton : addButton
     }
 
     func startActivity() {
@@ -208,19 +227,11 @@ private extension PreviewViewController {
 
 }
 
-// MARK: - Event Handlers
+// MARK: - Logic Helpers
 
 private extension PreviewViewController {
 
-    @objc func showModelPicker() {
-        loadModel()
-    }
-
-    @objc func closeTapped() {
-        dismiss(animated: true)
-    }
-
-    @objc func exportScene() {
+    func exportScene() {
         guard let scene = sceneView.scene else { return }
         let exportPath = FileManager.default.temporaryDirectory.appending(path: "Scene_\(UUID().uuidString).usdz")
         let exportSuccess = scene.write(
@@ -239,9 +250,12 @@ private extension PreviewViewController {
         showActivitySheet(activityItems: [exportPath])
     }
 
-    @objc func addFloor() {
-        let roomNode = sceneView.scene!.rootNode.childNodes[1].childNodes[0] // Fix this later
-        let boundingBox = roomNode.boundingBox
+    func addFloor() {
+        guard let spaceNode = spaceNode else {
+            print("No space node found")
+            return
+        }
+        let boundingBox = spaceNode.boundingBox
         let floorHeight: CGFloat = 0.11
         let boxOffset = Float(0.001) // make sides hangs off the wall
         let boxWidth = (boundingBox.max.x - boundingBox.min.x) + (boxOffset * 2)
@@ -259,7 +273,43 @@ private extension PreviewViewController {
         let x = boundingBox.min.x + (boxWidth / 2.0) - boxOffset
         let z = boundingBox.min.z + (boxLenght / 2.0) - boxOffset
         boxNode.localTranslate(by: .init(x: x, y: boundingBox.min.y - Float(box.height), z: z))
-        roomNode.addChildNode(boxNode)
+        spaceNode.addChildNode(boxNode)
+    }
+
+    func toggleFurnitures() {
+        guard let spaceNode = spaceNode else { return }
+        spaceNode.enumerateHierarchy { node, _ in
+            guard node.type == .furniture else { return }
+            node.isHidden = !shouldDrawFurnitures
+        }
+    }
+
+}
+
+// MARK: - Event Handlers
+
+private extension PreviewViewController {
+
+    @objc func showModelPicker() {
+        loadModel()
+    }
+
+    @objc func closeTapped() {
+        dismiss(animated: true)
+    }
+
+    @objc func showOptions() {
+        let actionSheet = UIAlertController(title: nil, message: "Modify your space", preferredStyle: .actionSheet)
+        actionSheet.addAction(.init(title: "Add Floor", style: .default) { [weak self] _ in
+            self?.addFloor()
+        })
+        actionSheet.addAction(.init(title: "Toggle Furnitures", style: .default) { [weak self] _ in
+            self?.shouldDrawFurnitures.toggle()
+        })
+        actionSheet.addAction(.init(title: "Export", style: .default) { [weak self] _ in
+            self?.exportScene()
+        })
+        present(actionSheet, animated: true)
     }
 
     @objc func handlePanGesture(sender: UIPanGestureRecognizer) {
@@ -272,15 +322,14 @@ private extension PreviewViewController {
         let anglePan = (sqrt(pow(x,2)+pow(y,2)))*(Float)(Double.pi)/180.0
 
         var rotationVector = SCNVector4()
-        rotationVector.x = 0.0
+        rotationVector.x = 0
         rotationVector.y = x
-        rotationVector.z = 0.0
+        rotationVector.z = 0
         rotationVector.w = anglePan
-
 
         selectedNode.rotation = rotationVector
 
-        if(sender.state == .ended) {
+        if sender.state == .ended {
             let currentPivot = selectedNode.pivot
             let changePivot = SCNMatrix4Invert(selectedNode.transform)
 
