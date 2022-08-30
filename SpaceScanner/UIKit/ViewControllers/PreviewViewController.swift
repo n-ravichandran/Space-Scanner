@@ -20,6 +20,7 @@ class PreviewViewController: UIViewController {
     private lazy var sceneView = setupSceneView()
     private lazy var activity = setupActivity()
     private lazy var slidingGesture = setupSlidingGesture()
+    private lazy var toolTipView = setupToolTipView()
 
     private let modelLoader = ModelLoader()
     private var selectionState: SelectionState = .none
@@ -196,6 +197,20 @@ private extension PreviewViewController {
         return slidingGesture
     }
 
+    func setupToolTipView() -> UIView {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 60))
+        view.backgroundColor = .systemBlue.withAlphaComponent(0.9)
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 30
+        let label = UILabel(frame: view.bounds.insetBy(dx: 8, dy: 8))
+        view.addSubview(label)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = "Select and rotate the floor to align with the space layout."
+        return view
+    }
+
     func setupSceneIfNeeded() {
         if isSceneSetup { return }
         view.addSubview(sceneView)
@@ -212,6 +227,32 @@ private extension PreviewViewController {
         let rotation = (Float.pi / 4) * 50
         cameraController.rotateBy(x: rotation, y: -rotation)
         SCNTransaction.commit()
+    }
+
+    func showFloorToolTip() {
+        toolTipView.alpha = 0
+        toolTipView.center.x = view.center.x
+        toolTipView.frame.origin.y = view.bounds.height
+
+        view.addSubview(toolTipView)
+        view.bringSubviewToFront(toolTipView)
+
+        UIView.animate(withDuration: 1.0, animations: {
+            self.toolTipView.frame.origin.y = self.view.bounds.height - self.toolTipView.frame.height - 100
+            self.toolTipView.alpha = 1
+        }) { _ in
+            self.scheduleToolTipDismissal()
+        }
+    }
+
+    func scheduleToolTipDismissal() {
+        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
+            timer.invalidate()
+            UIView.animate(withDuration: 0.4) {
+                self.toolTipView.frame.origin.y = self.view.bounds.height
+                self.toolTipView.alpha = 0
+            }
+        }
     }
 
     func setupLayouts() {
@@ -255,6 +296,16 @@ private extension PreviewViewController {
             print("No space node found")
             return
         }
+
+        var hasFloor = false
+        spaceNode.enumerateHierarchy({ node, _ in
+            if node.type == .floor {
+                hasFloor = true
+                return
+            }
+        })
+        if hasFloor { return }
+
         let boundingBox = spaceNode.boundingBox
         let floorHeight: CGFloat = 0.11
         let boxOffset = Float(0.001) // make sides hangs off the wall
@@ -274,6 +325,8 @@ private extension PreviewViewController {
         let z = boundingBox.min.z + (boxLenght / 2.0) - boxOffset
         boxNode.localTranslate(by: .init(x: x, y: boundingBox.min.y - Float(box.height), z: z))
         spaceNode.addChildNode(boxNode)
+
+        showFloorToolTip()
     }
 
     func toggleFurnitures() {
@@ -309,6 +362,7 @@ private extension PreviewViewController {
         actionSheet.addAction(.init(title: "Export", style: .default) { [weak self] _ in
             self?.exportScene()
         })
+        actionSheet.addAction(.init(title: "Cancel", style: .cancel))
         present(actionSheet, animated: true)
     }
 
