@@ -22,6 +22,7 @@ class PreviewViewController: UIViewController {
     private lazy var slidingGesture = setupSlidingGesture()
     private lazy var toolTipView = setupToolTipView()
 
+    private var currentAngleY: Float = 0.0
     private let modelLoader = ModelLoader()
     private var selectionState: SelectionState = .none
     private var isAnyModelLoaded = false {
@@ -111,6 +112,7 @@ class PreviewViewController: UIViewController {
                 case .door:
                     geometry.firstMaterial?.diffuse.contents = UIColor.green.withAlphaComponent(0.75)
                 case .floor:
+                    print("Position before rotation:", node.position, "pivot: ", node.pivot)
                     geometry.firstMaterial?.diffuse.contents = UIImage(named: "wooden_texture")
                 case .furniture:
                     geometry.firstMaterial?.diffuse.contents = UIColor(red: 75/255, green: 145/255, blue: 250/255, alpha: 0.9)
@@ -301,6 +303,7 @@ private extension PreviewViewController {
         spaceNode.enumerateHierarchy({ node, _ in
             if node.type == .floor {
                 hasFloor = true
+                node.removeFromParentNode()
                 return
             }
         })
@@ -353,7 +356,7 @@ private extension PreviewViewController {
 
     @objc func showOptions() {
         let actionSheet = UIAlertController(title: nil, message: "Modify your space", preferredStyle: .actionSheet)
-        actionSheet.addAction(.init(title: "Add Floor", style: .default) { [weak self] _ in
+        actionSheet.addAction(.init(title: "Toggle Floor", style: .default) { [weak self] _ in
             self?.addFloor()
         })
         actionSheet.addAction(.init(title: "Toggle Furnitures", style: .default) { [weak self] _ in
@@ -370,25 +373,13 @@ private extension PreviewViewController {
         guard case let SelectionState.surface(selectedNode) = selectionState else { return }
 
         let translation = sender.translation(in: sender.view)
+        var newAngleY = (Float)(translation.x)*(Float)(Double.pi)/180.0
+        newAngleY += currentAngleY
 
-        let x = Float(translation.x)
-        let y = Float(-translation.y)
-        let anglePan = (sqrt(pow(x,2)+pow(y,2)))*(Float)(Double.pi)/180.0
-
-        var rotationVector = SCNVector4()
-        rotationVector.x = 0
-        rotationVector.y = x
-        rotationVector.z = 0
-        rotationVector.w = anglePan
-
-        selectedNode.rotation = rotationVector
+        selectedNode.eulerAngles.y = newAngleY
 
         if sender.state == .ended {
-            let currentPivot = selectedNode.pivot
-            let changePivot = SCNMatrix4Invert(selectedNode.transform)
-
-            selectedNode.pivot = SCNMatrix4Mult(changePivot, currentPivot)
-            selectedNode.transform = SCNMatrix4Identity
+            currentAngleY = newAngleY
         }
     }
 
